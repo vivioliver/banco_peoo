@@ -2,8 +2,8 @@ import tkinter as tk
 
 # Lista de usuários (dicionários com nome, número da conta e saldo)
 usuarios = [
-    {"nome": "Alice", "conta": 12345, "saldo": 1000.0},
-    {"nome": "Bob", "conta": 54321, "saldo": 1500.0},
+    {"nome": "Ketlyn", "conta": 12345, "saldo": 2000.0},
+    {"nome": "Viviane", "conta": 54321, "saldo": 2500.0},
 ]
 
 # Função para encontrar um usuário pelo número da conta
