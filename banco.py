@@ -17,47 +17,69 @@ def encontrar_usuario(numero_conta):
 # Função para realizar um depósito
 def deposito():
     numero_conta = int(conta_entry.text())
-    valor = float(valor_entry.text())
-    usuario = encontrar_usuario(numero_conta)
-    if usuario:
-        usuario["saldo"] += valor
-        resultado_label.setText(f"Depósito de R${valor} realizado com sucesso. Novo saldo: R${usuario['saldo']}")
+    valor_text = valor_entry.text()
+    
+    # Verifica se o campo de valor está vazio
+    if valor_text:
+        valor = float(valor_text)
+        usuario = encontrar_usuario(numero_conta)
+        if usuario:
+            usuario["saldo"] += valor
+            resultado_label.setText(f"Depósito de R${valor} realizado com sucesso. Novo saldo: R${usuario['saldo']}")
+        else:
+            resultado_label.setText("Conta não encontrada.")
     else:
-        resultado_label.setText("Conta não encontrada.")
+        resultado_label.setText("Por favor, insira um valor.")
 
 # Função para realizar um saque
 def saque():
     numero_conta = int(conta_entry.text())
-    valor = float(valor_entry.text())
-    usuario = encontrar_usuario(numero_conta)
-    if usuario:
-        if usuario["saldo"] >= valor:
-            usuario["saldo"] -= valor
-            resultado_label.setText(f"Saque de R${valor} realizado com sucesso. Novo saldo: R${usuario['saldo']}")
+    valor_text = valor_entry.text()
+
+    # Verifica se o campo de valor está vazio ou igual a zero
+    if valor_text and float(valor_text) > 0:
+        valor = float(valor_text)
+        usuario = encontrar_usuario(numero_conta)
+        if usuario:
+            if usuario["saldo"] >= valor:
+                usuario["saldo"] -= valor
+                resultado_label.setText(f"Saque de R${valor} realizado com sucesso. Novo saldo: R${usuario['saldo']}")
+            else:
+                resultado_label.setText("Saldo insuficiente.")
         else:
-            resultado_label.setText("Saldo insuficiente.")
+            resultado_label.setText("Conta não encontrada.")
     else:
-        resultado_label.setText("Conta não encontrada.")
+        resultado_label.setText("Por favor, insira um valor válido maior que zero.")
 
 #Função para realizar uma transferência
+# Função para realizar uma transferência
 def transferencia():
-    numero_conta_origem = int(conta_entry.text())
-    numero_conta_destino = int(conta_destino_entry.text())
-    valor = float(valor_entry.text())
+    numero_conta_origem_text = conta_entry.text()
+    numero_conta_destino_text = conta_destino_entry.text()
+    valor_text = valor_entry.text()
     
-    usuario_origem = encontrar_usuario(numero_conta_origem)
-    usuario_destino = encontrar_usuario(numero_conta_destino)
-    
-    if usuario_origem and usuario_destino:
-        if usuario_origem["saldo"] >= valor:
-            usuario_origem["saldo"] -= valor
-            usuario_destino["saldo"] += valor
-            resultado_label.config(f"Transferência de R${valor} realizada com sucesso. Novo saldo da conta {usuario_origem['conta']}: R${usuario_origem['saldo']}")
-            limpar_campos()
+    # Verifica se todos os campos estão preenchidos
+    if numero_conta_origem_text and numero_conta_destino_text and valor_text:
+        numero_conta_origem = int(numero_conta_origem_text)
+        numero_conta_destino = int(numero_conta_destino_text)
+        valor = float(valor_text)
+
+        usuario_origem = encontrar_usuario(numero_conta_origem)
+        usuario_destino = encontrar_usuario(numero_conta_destino)
+        
+        if usuario_origem and usuario_destino:
+            if usuario_origem["saldo"] >= valor:
+                usuario_origem["saldo"] -= valor
+                usuario_destino["saldo"] += valor
+                resultado_label.setText(f"Transferência de R${valor} realizada com sucesso. Novo saldo da conta {usuario_origem['conta']}: R${usuario_origem['saldo']}")
+                limpar_campos()
+            else:
+                resultado_label.setText("Saldo insuficiente.")
         else:
-            resultado_label.setText("Saldo insuficiente.")
+            resultado_label.setText("Conta de origem ou destino não encontrada.")
     else:
-        resultado_label.setText("Conta de origem ou destino não encontrada.")
+        resultado_label.setText("Preencha todos os campos para realizar a transferência.")
+
 
 # Função para consultar o saldo
 def consultar_saldo():
