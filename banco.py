@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QStackedWidget
 
 # Lista de usuários (dicionários com nome, número da conta e saldo)
 usuarios = [
@@ -52,9 +52,12 @@ def saque():
         resultado_label.setText("Por favor, insira um valor válido maior que zero.")
 
 #Função para realizar uma transferência
-# Função para realizar uma transferência
 def transferencia():
-    numero_conta_origem_text = conta_entry.text()
+    stack_widget.setCurrentIndex(1)  # Muda para a página de transferência
+
+# Função para concluir uma transferência
+def concluir_transferencia():
+    numero_conta_origem_text = conta_origem_entry.text()
     numero_conta_destino_text = conta_destino_entry.text()
     valor_text = valor_entry.text()
     
@@ -73,13 +76,13 @@ def transferencia():
                 usuario_destino["saldo"] += valor
                 resultado_label.setText(f"Transferência de R${valor} realizada com sucesso. Novo saldo da conta {usuario_origem['conta']}: R${usuario_origem['saldo']}")
                 limpar_campos()
+                stack_widget.setCurrentIndex(0)  # Volta para a página principal
             else:
                 resultado_label.setText("Saldo insuficiente.")
         else:
             resultado_label.setText("Conta de origem ou destino não encontrada.")
     else:
         resultado_label.setText("Preencha todos os campos para realizar a transferência.")
-
 
 # Função para consultar o saldo
 def consultar_saldo():
@@ -93,6 +96,7 @@ def consultar_saldo():
 # Função para limpar os campos de entrada
 def limpar_campos():
     conta_entry.clear()
+    conta_origem_entry.clear()
     conta_destino_entry.clear()
     valor_entry.clear()
 
@@ -102,14 +106,11 @@ janela = QWidget()
 janela.setWindowTitle("Simulação Bancária")
 
 # Widgets
-conta_origem_label = QLabel("Conta de Origem:")
 conta_entry = QLineEdit()
-
-conta_destino_label = QLabel("Conta de Destino:")
-conta_destino_entry = QLineEdit()
-
+conta_entry.setPlaceholderText("Número de Conta")
 valor_label = QLabel("Valor:")
 valor_entry = QLineEdit()
+
 
 deposito_button = QPushButton("Depósito")
 deposito_button.clicked.connect(deposito)
@@ -119,6 +120,14 @@ saque_button.clicked.connect(saque)
 
 transferencia_button = QPushButton("Transferência")
 transferencia_button.clicked.connect(transferencia)
+
+conta_origem_label = QLabel("Conta de Origem:")
+conta_origem_entry = QLineEdit()
+conta_destino_label = QLabel("Conta de Destino:")
+conta_destino_entry = QLineEdit()
+
+concluir_transferencia_button = QPushButton("Concluir Transferência")
+concluir_transferencia_button.clicked.connect(concluir_transferencia)
 
 consulta_button = QPushButton("Consultar Saldo")
 consulta_button.clicked.connect(consultar_saldo)
@@ -130,20 +139,31 @@ resultado_label = QLabel("")
 
 # Layout da janela
 layout = QVBoxLayout()
-layout.addWidget(conta_origem_label)
 layout.addWidget(conta_entry)
-layout.addWidget(conta_destino_label)
-layout.addWidget(conta_destino_entry)
 layout.addWidget(valor_label)
 layout.addWidget(valor_entry)
 layout.addWidget(deposito_button)
 layout.addWidget(saque_button)
 layout.addWidget(transferencia_button)
+layout.addWidget(conta_origem_label)
+layout.addWidget(conta_origem_entry)
+layout.addWidget(conta_destino_label)
+layout.addWidget(conta_destino_entry)
+layout.addWidget(concluir_transferencia_button)
 layout.addWidget(consulta_button)
 layout.addWidget(limpar_button)
 layout.addWidget(resultado_label)
 
-janela.setLayout(layout)
+# Configurar QStackedWidget para alternar entre as páginas
+stack_widget = QStackedWidget()
+stack_widget.addWidget(QWidget())  # Página principal
+stack_widget.addWidget(QWidget())  # Página de transferência
+stack_widget.setCurrentIndex(0)  # Inicia na página principal
+
+# Adicione o layout da página atual ao QStackedWidget
+stack_widget.widget(0).setLayout(layout)
+janela.setLayout(QVBoxLayout())
+janela.layout().addWidget(stack_widget)
 
 # Exibição da janela
 janela.show()
